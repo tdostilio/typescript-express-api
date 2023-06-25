@@ -4,6 +4,13 @@ import * as admin from 'firebase-admin'
 interface CustomRequest extends Request {
   user?: any // Replace 'any' with the appropriate type for your user object
 }
+
+// Initialize the Firebase Admin SDK with your service account credentials
+const serviceAccount = require('../../../firebase-service-account-key.json')
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+})
+
 // Middleware to verify Firebase session
 export const verifySession = async (
   req: CustomRequest,
