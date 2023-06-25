@@ -1,5 +1,5 @@
-import HttpException from "../common/http-exception";
-import { Request, Response, NextFunction } from "express";
+import HttpException from '../../lib/http-exception'
+import { Request, Response, NextFunction } from 'express'
 
 // https://expressjs.com/en/guide/using-middleware.html#middleware.error-handling
 export const errorHandler = (

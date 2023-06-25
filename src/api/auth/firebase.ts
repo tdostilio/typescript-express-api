@@ -8,6 +8,7 @@ import { initializeApp } from 'firebase/app'
 import * as dotenv from 'dotenv'
 
 dotenv.config()
+
 const firebaseConfig = {
   apiKey: process.env.FIREBASEAPIKEY,
   authDomain: process.env.FIREBASEAUTHDOMAIN,
@@ -18,6 +19,9 @@ const firebaseConfig = {
   measurementId: process.env.FIREBASEMEASUREMENTID,
 }
 
+const auth = getAuth()
+initializeApp(firebaseConfig)
+
 export interface User {
   uid: string
   email: string
@@ -25,9 +29,6 @@ export interface User {
   photoURL?: string
   // Include additional properties if needed
 }
-
-initializeApp(firebaseConfig)
-const auth = getAuth()
 
 export const createUser = async (
   email: string,
