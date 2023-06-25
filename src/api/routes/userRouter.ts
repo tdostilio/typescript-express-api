@@ -3,13 +3,11 @@
  */
 
 import express, { Request, Response } from 'express'
-import * as UserService from '../../users/user.service'
-// import { BaseUser } from './user.interface'
+import * as FirebaseClient from '../auth/firebaseClient'
 
 /**
  * Router Definition
  */
-
 const usersRouter = express.Router()
 
 /**
@@ -19,7 +17,7 @@ const usersRouter = express.Router()
 usersRouter.post('/signUp', async (req: Request, res: Response) => {
   const { email, password } = req.body
   try {
-    const newUser = await UserService.createUser(email, password)
+    const newUser = await FirebaseClient.createUser(email, password)
     res.status(201).send(newUser)
   } catch (e: any) {
     res.status(500).send(e.message)
@@ -30,7 +28,7 @@ usersRouter.post('/signUp', async (req: Request, res: Response) => {
 usersRouter.post('/signIn', async (req: Request, res: Response) => {
   const { email, password } = req.body
   try {
-    const user = await UserService.signIn(email, password)
+    const user = await FirebaseClient.signIn(email, password)
     if (user) {
       return res.status(200).send(user)
     }
@@ -43,7 +41,7 @@ usersRouter.post('/signIn', async (req: Request, res: Response) => {
 // this technically doesn't do anything yet because this is client-side auth, but its ok
 usersRouter.post('/signOut', async (req: Request, res: Response) => {
   try {
-    await UserService.logOut()
+    await FirebaseClient.logOut()
     res.status(201).send('Success')
   } catch (e: any) {
     res.status(500).send(e.message)

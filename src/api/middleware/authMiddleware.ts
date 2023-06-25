@@ -26,10 +26,12 @@ export const verifySession = async (
 
     // Verify the ID token using the Firebase Admin SDK
     const decodedToken = await admin.auth().verifyIdToken(token, true)
-    req.user = decodedToken.uid // Set the authenticated user in the request object
-    if (!req.user) {
+    // Shouldn't be possible to decode a token w/o a uid, but for sanity check
+    if (!decodedToken.uid) {
       return res.status(401).json({ message: 'Unauthorized' })
     }
+    req.user = decodedToken.uid // Set the authenticated user in the request object
+
     next()
   } catch (error) {
     console.error('Error verifying Firebase session:', error)

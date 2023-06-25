@@ -29,11 +29,7 @@ export const createUser = async (
   email: string,
   password: string
 ): Promise<IdToken> => {
-  let userCredential = await createUserWithEmailAndPassword(
-    auth,
-    email,
-    password
-  )
+  await createUserWithEmailAndPassword(auth, email, password)
   const token = auth.currentUser && (await auth.currentUser.getIdToken())
   return { token }
 }
