@@ -1,18 +1,19 @@
 import express, { Request, Response } from 'express'
-import PetModel, { PetDocument, CreatePetParams } from '../../db/models/pet'
+import PetModel, { PetDocument, CreationParams } from '../../db/models/pet'
+import { UserRequest } from '../middleware/authMiddleware'
 
 const petRouter = express.Router()
 
 // Create a new pet
-petRouter.post('/', async (req: Request, res: Response) => {
+petRouter.post('/', async (req: UserRequest, res: Response) => {
   try {
-    const { color, species, name, ownerId } = req.body
+    const { color, species, name } = req.body
 
-    const petData: CreatePetParams = {
+    const petData: CreationParams = {
       color,
       species,
       name,
-      owner: ownerId, // Assign the ownerId to the owner field
+      owner: req.user,
     }
 
     const pet = await PetModel.createPet(petData)
@@ -24,10 +25,9 @@ petRouter.post('/', async (req: Request, res: Response) => {
 })
 
 // Get all pets for a specific owner
-petRouter.get('/', async (req: Request, res: Response) => {
+petRouter.get('/', async (req: UserRequest, res: Response) => {
   try {
-    const { ownerId } = req.query
-    const pets = await PetModel.getAllPets(ownerId as string)
+    const pets = await PetModel.getAllPets(req.user)
     res.status(200).json(pets)
   } catch (error) {
     console.error('Error fetching pets:', error)
@@ -36,11 +36,10 @@ petRouter.get('/', async (req: Request, res: Response) => {
 })
 
 // Get a specific pet by ID for a specific owner
-petRouter.get('/:id', async (req: Request, res: Response) => {
+petRouter.get('/:id', async (req: UserRequest, res: Response) => {
   try {
     const { id } = req.params
-    const { ownerId } = req.query
-    const pet = await PetModel.getPetById(id, ownerId as string)
+    const pet = await PetModel.getPetById(id, req.user)
 
     if (!pet) {
       return res.status(404).json({ error: 'Pet not found' })
@@ -54,19 +53,19 @@ petRouter.get('/:id', async (req: Request, res: Response) => {
 })
 
 // Update a specific pet by ID for a specific owner
-petRouter.put('/:id', async (req: Request, res: Response) => {
+petRouter.put('/:id', async (req: UserRequest, res: Response) => {
   try {
     const { id } = req.params
-    const { color, species, name, ownerId } = req.body
+    const { color, species, name } = req.body
 
     const petData: Partial<PetDocument> = {
       color,
       species,
       name,
-      owner: ownerId, // Update the owner field with the new ownerId
+      owner: req.user, // Update the owner field with the new ownerId
     }
 
-    const pet = await PetModel.updatePet(id, petData, ownerId as string)
+    const pet = await PetModel.updatePet(id, petData, req.user)
 
     if (!pet) {
       return res.status(404).json({ error: 'Pet not found' })
@@ -80,18 +79,17 @@ petRouter.put('/:id', async (req: Request, res: Response) => {
 })
 
 // Delete a specific pet by ID for a specific owner
-petRouter.delete('/:id', async (req: Request, res: Response) => {
+petRouter.delete('/:id', async (req: UserRequest, res: Response) => {
   try {
     const { id } = req.params
-    const { ownerId } = req.query
 
-    const deleted = await PetModel.deletePet(id, ownerId as string)
+    const deleted = await PetModel.deletePet(id, req.user)
 
     if (!deleted) {
       return res.status(404).json({ error: 'Pet not found' })
     }
 
-    res.status(204).end()
+    res.status(204).json({ message: 'Success' }).end()
   } catch (error) {
     console.error('Error deleting pet:', error)
     res.status(500).json({ error: 'Failed to delete pet' })

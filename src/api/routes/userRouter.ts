@@ -32,7 +32,7 @@ usersRouter.post('/signIn', async (req: Request, res: Response) => {
   try {
     const user = await UserService.signIn(email, password)
     if (user) {
-      res.status(201).send(user)
+      return res.status(200).send(user)
     }
     res.status(401).send('Unauthorized')
   } catch (e: any) {
@@ -40,6 +40,7 @@ usersRouter.post('/signIn', async (req: Request, res: Response) => {
   }
 })
 
+// this technically doesn't do anything yet because this is client-side auth, but its ok
 usersRouter.post('/signOut', async (req: Request, res: Response) => {
   try {
     await UserService.logOut()

@@ -14,14 +14,14 @@ export interface CreationParams extends Omit<PetDocument, keyof Document> {}
 // Define a custom interface that extends the Model<PetDocument> interface
 export interface PetDocumentModel extends Model<PetDocument> {
   createPet(petData: CreationParams): Promise<PetDocument>
-  getAllPets(ownerId: string): Promise<PetDocument[]>
-  getPetById(id: string, ownerId: string): Promise<PetDocument | null>
+  getAllPets(owner: string): Promise<PetDocument[]>
+  getPetById(id: string, owner: string): Promise<PetDocument | null>
   updatePet(
     id: string,
     petData: Partial<PetDocument>,
-    ownerId: string
+    owner: string
   ): Promise<PetDocument | null>
-  deletePet(id: string, ownerId: string): Promise<boolean>
+  deletePet(id: string, owner: string): Promise<boolean>
 }
 
 // Create a new Mongoose schema for the pet
@@ -54,33 +54,33 @@ PetSchema.statics.createPet = async function (
 }
 
 PetSchema.statics.getAllPets = async function (
-  ownerId: string
+  owner: string
 ): Promise<PetDocument[]> {
-  return this.find({ owner: ownerId })
+  return this.find({ owner })
 }
 
 PetSchema.statics.getPetById = async function (
   id: string,
-  ownerId: string
+  owner: string
 ): Promise<PetDocument | null> {
-  return this.findOne({ _id: id, owner: ownerId })
+  return this.findOne({ _id: id, owner })
 }
 
 PetSchema.statics.updatePet = async function (
   id: string,
   petData: Partial<PetDocument>,
-  ownerId: string
+  owner: string
 ): Promise<PetDocument | null> {
-  return this.findOneAndUpdate({ _id: id, owner: ownerId }, petData, {
+  return this.findOneAndUpdate({ _id: id, owner }, petData, {
     new: true,
   })
 }
 
 PetSchema.statics.deletePet = async function (
   id: string,
-  ownerId: string
+  owner: string
 ): Promise<boolean> {
-  const result = await this.findOneAndDelete({ _id: id, owner: ownerId })
+  const result = await this.findOneAndDelete({ _id: id, owner })
   return !!result
 }
 

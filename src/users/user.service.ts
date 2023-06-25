@@ -18,12 +18,8 @@ const firebaseConfig = {
   measurementId: process.env.FIREBASEMEASUREMENTID,
 }
 
-export interface User {
-  uid: string
-  email: string
-  displayName?: string
-  photoURL?: string
-  // Include additional properties if needed
+export interface IdToken {
+  token: string
 }
 
 initializeApp(firebaseConfig)
@@ -32,23 +28,23 @@ const auth = getAuth()
 export const createUser = async (
   email: string,
   password: string
-): Promise<User> => {
+): Promise<IdToken> => {
   let userCredential = await createUserWithEmailAndPassword(
     auth,
     email,
     password
   )
-  const user = userCredential.user
-  return user
+  const token = auth.currentUser && (await auth.currentUser.getIdToken())
+  return { token }
 }
 
 export const signIn = async (
   email: string,
   password: string
-): Promise<User> => {
-  let userCredential = await signInWithEmailAndPassword(auth, email, password)
-  const user = userCredential.user
-  return user
+): Promise<IdToken> => {
+  await signInWithEmailAndPassword(auth, email, password)
+  const token = auth.currentUser && (await auth.currentUser.getIdToken())
+  return { token }
 }
 
 // named logout to avoid name collision w/ firebase
