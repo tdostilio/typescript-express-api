@@ -2,10 +2,10 @@ import express, { Request, Response } from 'express'
 import PetModel, { PetDocument, CreationParams } from '../../db/models/pet'
 import { UserRequest } from '../middleware/authMiddleware'
 
-const petRouter = express.Router()
+const dashboardRouter = express.Router()
 
 // Create a new pet
-petRouter.post('/', async (req: UserRequest, res: Response) => {
+dashboardRouter.post('/', async (req: UserRequest, res: Response) => {
   try {
     const { color, species, name } = req.body
     const petData: CreationParams = {
@@ -23,7 +23,7 @@ petRouter.post('/', async (req: UserRequest, res: Response) => {
 })
 
 // Get all pets for a specific owner
-petRouter.get('/', async (req: UserRequest, res: Response) => {
+dashboardRouter.get('/', async (req: UserRequest, res: Response) => {
   try {
     const pets = await PetModel.getAllPets(req.user)
     res.status(200).json(pets)
@@ -34,7 +34,7 @@ petRouter.get('/', async (req: UserRequest, res: Response) => {
 })
 
 // Get a specific pet by ID for a specific owner
-petRouter.get('/:id', async (req: UserRequest, res: Response) => {
+dashboardRouter.get('/:id', async (req: UserRequest, res: Response) => {
   try {
     const { id } = req.params
     const pet = await PetModel.getPetById(id, req.user)
@@ -51,7 +51,7 @@ petRouter.get('/:id', async (req: UserRequest, res: Response) => {
 })
 
 // Update a specific pet by ID for a specific owner
-petRouter.put('/:id', async (req: UserRequest, res: Response) => {
+dashboardRouter.put('/:id', async (req: UserRequest, res: Response) => {
   try {
     const { id } = req.params
     const { color, species, name } = req.body
@@ -74,7 +74,7 @@ petRouter.put('/:id', async (req: UserRequest, res: Response) => {
 })
 
 // Delete a specific pet by ID for a specific owner
-petRouter.delete('/:id', async (req: UserRequest, res: Response) => {
+dashboardRouter.delete('/:id', async (req: UserRequest, res: Response) => {
   try {
     const { id } = req.params
     const deleted = await PetModel.deletePet(id, req.user)
@@ -88,4 +88,4 @@ petRouter.delete('/:id', async (req: UserRequest, res: Response) => {
   }
 })
 
-export default petRouter
+export default dashboardRouter
